@@ -54,35 +54,37 @@ public class ListOfPhotos extends AppCompatActivity{
 
         if (getIntent() != null) {
 
-
             from = getIntent().getStringExtra("from");
 
             if(from!=null) {
 
                 if(from.equalsIgnoreCase("main")) {
 
+                    //received parcelable data.
                     parcelablePhotosArray = getIntent().getParcelableArrayExtra("photodata");
+                    //converted into array of photodata type.
                     arrayOfPhotoObject = Arrays.copyOf(parcelablePhotosArray, parcelablePhotosArray.length, PhotoData[].class);
-
+                    //converted array to arraylist as we require keeping track of deleted photos.
                     photoArrayList = new ArrayList<>();
-
 
                     for(int i = 0; i< arrayOfPhotoObject.length; i++){
                         largePicUrls.add(arrayOfPhotoObject[i].getLargeImage());
                         photoArrayList.add(arrayOfPhotoObject[i]);
                     }
-
+                    //setting adapter with full sized photos received from api.
                     tableAdapter = new TableAdapter(photoArrayList);
                     tableRecycler.setAdapter(tableAdapter);
                     tableAdapter.notifyDataSetChanged();
                 }
 
                 else if(from.equalsIgnoreCase("single")){
-                    photoArrayList = getIntent().getParcelableArrayListExtra("testA");
+                    //if it comes from singlephoto activity we can keep track of deleted items as
+                    //as per that set the new photoarray to the adapter.
+                    photoArrayList = getIntent().getParcelableArrayListExtra("updatedList");
                     for(int i = 0; i< photoArrayList.size(); i++){
                         largePicUrls.add(photoArrayList.get(i).getLargeImage());
                     }
-                    Log.d(TAG, "in single: "+getIntent().getParcelableArrayListExtra("testA").size());
+                    //setting adapter with possible updated data without the deleted ones.
                     tableAdapter = new TableAdapter(photoArrayList);
                     tableRecycler.setAdapter(tableAdapter);
                     tableAdapter.notifyDataSetChanged();
@@ -90,7 +92,6 @@ public class ListOfPhotos extends AppCompatActivity{
             }
             tag = getIntent().getStringExtra("tag");
             headerTitle.setText(tag);
-
         }
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -147,14 +148,13 @@ public class ListOfPhotos extends AppCompatActivity{
 
                     if(MainActivity.isNetworkAvailable(v.getContext())) {
                         Intent intent = new Intent(getApplicationContext(), SinglePhotoActivity.class);
+                        //keep track of correct photo and its position.
                         intent.putExtra("pos", position);
                         intent.putExtra("tag", tag);
                         intent.putExtra("photoArrayList", photoArrayList);
-                        intent.putExtra("parc", parcelablePhotosArray);
                         intent.putExtra("url", largeURL);
-                        //intent.putExtra("size", photoArrayList.size());
-                        intent.putExtra("tag", tag);
                         intent.putStringArrayListExtra("largePicUrls", largePicUrls);
+
                         startActivity(intent);
                         finish();
                     }

@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     SearchView searchView;
 
+    //constructing api related fields.
     private static final String FLICKR_BASE_URL = "https://api.flickr.com/services/rest/?method=";
     private static final String FLICKR_PHOTOS_SEARCH = "flickr.photos.search";
     private static final String MY_APIKEY = "&api_key=0c47b6819071c44d57c284bdb180e53d";
@@ -55,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
         searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(final String s) {
+            public boolean onQueryTextSubmit(final String tag) {
                 if(isNetworkAvailable(getApplicationContext())) {
 
-                    String mainAPI = FLICKR_BASE_URL + FLICKR_PHOTOS_SEARCH + MY_APIKEY + TAGS + s + CONTENT_TYPE + MEDIA_TYPE + EXTRAS + PER_PAGE + FORMAT +
+                    String mainAPI = FLICKR_BASE_URL + FLICKR_PHOTOS_SEARCH + MY_APIKEY + TAGS + tag + CONTENT_TYPE + MEDIA_TYPE + EXTRAS + PER_PAGE + FORMAT +
                             NOJSONCALLBACK;
                     OkHttpClient httpClient = new OkHttpClient();
                     Request request = new Request.Builder().url(mainAPI).build();
@@ -72,11 +73,12 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             try {
-                                PhotoData[] photoDatas = getPhotoData(response.body().string());
+                                //receive parcelable photo array using method.
+                                PhotoData[] listOfPhotosParcelable = getPhotoData(response.body().string());
                                 Intent intent = new Intent(MainActivity.this, ListOfPhotos.class);
-                                intent.putExtra("photodata", photoDatas);
+                                intent.putExtra("photodata", listOfPhotosParcelable);
                                 intent.putExtra("from", "main");
-                                intent.putExtra("tag", s);
+                                intent.putExtra("tag", tag);
                                 startActivity(intent);
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -97,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private PhotoData[] getPhotoData(String jsondata) throws JSONException {
+       //parse JSON response and obtain wach photo object values.
         mainJsonObject = new JSONObject(jsondata);
         photoJsonObject = mainJsonObject.getJSONObject("photos");
         photoJsonArray = photoJsonObject.getJSONArray("photo");
@@ -104,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (photoJsonArray.length() > 0) {
             for (int i = 0; i < photoJsonArray.length(); i++) {
-
                 oneRow = new PhotoData();
                 oneRow.setCaption(photoJsonArray.getJSONObject(i).getString("title"));
                 oneRow.setOwnerName(photoJsonArray.getJSONObject(i).getString("ownername"));
@@ -127,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 oneRow.setLargeImage(photoJsonArray.getJSONObject(i).getString("url_l"));
             }
             //extract image resource from api. Response is inconsistent so taken care of all the scenarios
-            //to get the best available image resource url.
+            //to get the best available largest image resource url.
         } catch (JSONException j) {
             try {
                 oneRow.setLargeImage(photoJsonArray.getJSONObject(i).getString("url_l"));
@@ -157,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //checking internet connection status.
     public static boolean isNetworkAvailable(Context mContext) {
         ConnectivityManager manager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
