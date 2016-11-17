@@ -19,7 +19,8 @@ public class SwipeLayoutFrag extends Fragment {
     static String largeURL;
 
     public static Fragment newInstance(Context cont, int position, String url){
-        SwipeLayoutFrag swipeLayoutFrag = new SwipeLayoutFrag();
+        SwipeLayoutFrag swipeLayoutFrag;
+        swipeLayoutFrag = new SwipeLayoutFrag();
         index = position;
         context = cont;
         largeURL = url;

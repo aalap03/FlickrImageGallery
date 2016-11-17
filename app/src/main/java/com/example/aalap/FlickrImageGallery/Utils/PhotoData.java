@@ -1,11 +1,13 @@
 package com.example.aalap.FlickrImageGallery.Utils;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
- * Created by Aalap on 2016-09-08.
+ * Created by Aalap on 2016-11-13.
  */
-public class PhotoData implements Serializable {
+
+public class PhotoData implements Parcelable {
 
     private String ownerName;
     private String caption;
@@ -40,7 +42,47 @@ public class PhotoData implements Serializable {
         return thumbnail;
     }
 
-    public void setThumbnail(String thumbnail) {
+    public void setSmallImage(String thumbnail) {
         this.thumbnail = thumbnail;
     }
+
+    public void removeItem(String largeImage){
+
+    }
+
+    public PhotoData(){}
+
+    public PhotoData(Parcel in) {
+        caption=in.readString();
+        thumbnail=in.readString();
+        largeImage=in.readString();
+        ownerName=in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(caption);
+        dest.writeString(thumbnail);
+        dest.writeString(largeImage);
+        dest.writeString(ownerName);
+    }
+
+    public static final Creator<PhotoData> CREATOR = new Creator<PhotoData>() {
+        @Override
+        public PhotoData createFromParcel(Parcel in) {
+            return new PhotoData(in);
+        }
+
+        @Override
+        public PhotoData[] newArray(int size) {
+            return new PhotoData[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+
 }
