@@ -100,11 +100,8 @@ public class SinglePhotoActivity extends FragmentActivity {
                 public void onClick(View v) {
                     //if user deleted photos then take care of that scenatio by updating the adapter in listofphotos using the
                     //method
-                    if(hasDeleted){
-                        updateListOfPhotosAfterDelete(v);
-                        finish();
-                    }
-                    else finish();
+                    handleBackButton(v);
+
                 }
             });
 
@@ -134,6 +131,14 @@ public class SinglePhotoActivity extends FragmentActivity {
             container.removeView((LinearLayout)object);
         }
 
+        private void handleBackButton(View v) {
+            if(hasDeleted){
+                updateListOfPhotosAfterDelete(v);
+                finish();
+            }
+            else finish();
+        }
+
         public void removePicture(int position){
 
             hasDeleted = true;
@@ -156,5 +161,7 @@ public class SinglePhotoActivity extends FragmentActivity {
             toUpdateList.putExtra("updatedList", photoDataArrayList);
             startActivity(toUpdateList);
         }
+
+
     }
 }

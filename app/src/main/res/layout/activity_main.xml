@@ -15,8 +15,8 @@
     <SearchView
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@color/grey"
         android:id="@+id/searchView"
+        android:background="@color/grey"
         android:layout_centerInParent="true">
 
     </SearchView>

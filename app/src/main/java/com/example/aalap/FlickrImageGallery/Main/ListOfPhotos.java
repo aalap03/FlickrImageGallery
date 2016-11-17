@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import jp.wasabeef.recyclerview.adapters.SlideInRightAnimationAdapter;
+
 public class ListOfPhotos extends AppCompatActivity{
 
     RecyclerView tableRecycler;
@@ -33,7 +35,6 @@ public class ListOfPhotos extends AppCompatActivity{
     ArrayList<String> largePicUrls;
     TextView headerTitle;
     ImageView back;
-    boolean isDeleted = false;
     PhotoData[] arrayOfPhotoObject;
     Parcelable[] parcelablePhotosArray;
     ArrayList<PhotoData> photoArrayList;
@@ -72,9 +73,7 @@ public class ListOfPhotos extends AppCompatActivity{
                         photoArrayList.add(arrayOfPhotoObject[i]);
                     }
                     //setting adapter with full sized photos received from api.
-                    tableAdapter = new TableAdapter(photoArrayList);
-                    tableRecycler.setAdapter(tableAdapter);
-                    tableAdapter.notifyDataSetChanged();
+                    fillAndAnimateAdapter(photoArrayList);
                 }
 
                 else if(from.equalsIgnoreCase("single")){
@@ -84,10 +83,8 @@ public class ListOfPhotos extends AppCompatActivity{
                     for(int i = 0; i< photoArrayList.size(); i++){
                         largePicUrls.add(photoArrayList.get(i).getLargeImage());
                     }
-                    //setting adapter with possible updated data without the deleted ones.
-                    tableAdapter = new TableAdapter(photoArrayList);
-                    tableRecycler.setAdapter(tableAdapter);
-                    tableAdapter.notifyDataSetChanged();
+                    //setting and animating adapter with possible updated data without the deleted ones.
+                    fillAndAnimateAdapter(photoArrayList);
                 }
             }
             tag = getIntent().getStringExtra("tag");
@@ -100,6 +97,16 @@ public class ListOfPhotos extends AppCompatActivity{
                 onBackPressed();
             }
         });
+    }
+
+    //adapter with appropriate photoarraylist and slide animator using a wonderful library.
+    void fillAndAnimateAdapter(ArrayList<PhotoData> photoArrayList){
+        tableAdapter = new TableAdapter(photoArrayList);
+        SlideInRightAnimationAdapter slideInRightAnimationAdapter = new SlideInRightAnimationAdapter(tableAdapter);
+        slideInRightAnimationAdapter.setDuration(500);
+        slideInRightAnimationAdapter.setFirstOnly(false);
+        tableRecycler.setAdapter(slideInRightAnimationAdapter);
+        tableAdapter.notifyDataSetChanged();
     }
 
     @Override
